@@ -4,5 +4,5 @@ from .serializers import BookClubSerializer
 
 
 class BookClubListView(generics.ListAPIView):
-    queryset = BookClub.objects.all()
+    queryset = BookClub.objects.select_related('integration').all()
     serializer_class = BookClubSerializer
