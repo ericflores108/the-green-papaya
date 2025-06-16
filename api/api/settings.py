@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "corsheaders",
+    "bookclub",
 ]
 
 MIDDLEWARE = [
@@ -89,9 +90,7 @@ DATABASES = {
         "PASSWORD": os.getenv("DB_PWD"),
         "HOST": os.getenv("DB_HOST"),
         "PORT": os.getenv("DB_PORT"),
-        "OPTIONS": {
-            "pool": True,
-        },
+        "OPTIONS": {"pool": True},
     }
 }
 
