@@ -13,19 +13,23 @@ RUN apt-get update \
     postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies
-COPY pyproject.toml uv.lock ./
+# Install uv
 RUN pip install uv
+
+# Copy dependency files
+COPY pyproject.toml uv.lock ./
+
+# Create virtual environment and install dependencies
+RUN uv venv
 RUN uv sync --frozen --no-dev
 
 # Copy project
 COPY . .
 
-# Collect static files
-RUN python manage.py collectstatic --noinput
+# Collect static files using the virtual environment
+RUN uv run python manage.py collectstatic --noinput
 
 # Expose port
 EXPOSE 8000
 
-# Run the application
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "api.wsgi:application"]
+CMD ["uv", "run", "gunicorn","--bind",":8000","--workers","2","api.wsgi"]
