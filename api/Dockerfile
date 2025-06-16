@@ -10,13 +10,13 @@ WORKDIR /app
 # Install system dependencies
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        postgresql-client \
+    postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
 COPY pyproject.toml uv.lock ./
 RUN pip install uv
-RUN uv pip install --system -r uv.lock
+RUN uv sync --frozen --no-dev
 
 # Copy project
 COPY . .

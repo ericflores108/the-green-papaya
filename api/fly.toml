@@ -1,32 +1,45 @@
-app = "the-green-papaya-api"
-primary_region = "ord"
+# fly.toml app configuration file generated for the-green-papaya-api on 2025-06-15T20:12:41-07:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'the-green-papaya-api'
+primary_region = 'sjc'
+console_command = '/code/manage.py shell'
 
 [build]
 
-[env]
-DEBUG = "false"
-ALLOWED_HOSTS = "the-green-papaya-api.fly.dev"
+[deploy]
+release_command = 'python manage.py migrate --noinput'
 
+[env]
+ALLOWED_HOSTS = 'the-green-papaya-api.fly.dev'
+DEBUG = 'false'
+PORT = '8000'
+
+[processes]
+app = 'gunicorn --bind 0.0.0.0:8000 api.wsgi:application'
 
 [http_service]
 internal_port = 8000
 force_https = true
-auto_stop_machines = "stop"
+auto_stop_machines = 'stop'
 auto_start_machines = true
 min_machines_running = 0
-processes = ["app"]
+processes = ['app']
 
 [[http_service.checks]]
-grace_period = "10s"
-interval = "30s"
-method = "GET"
-timeout = "5s"
-path = "/admin/"
-
-[processes]
-app = "gunicorn --bind 0.0.0.0:8000 api.wsgi:application"
+interval = '30s'
+timeout = '5s'
+grace_period = '10s'
+method = 'GET'
+path = '/admin/'
 
 [[vm]]
-memory = "1gb"
-cpu_kind = "shared"
+memory = '1gb'
+cpu_kind = 'shared'
 cpus = 1
+
+[[statics]]
+guest_path = '/code/static'
+url_prefix = '/static/'
