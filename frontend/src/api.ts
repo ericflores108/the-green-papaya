@@ -3,6 +3,7 @@ import type { AxiosInstance } from 'axios';
 
 // Type definitions for your book data
 export interface Book {
+  id: string;
   url: string;
   integration_name: string;
   author: string;
@@ -67,8 +68,8 @@ export const bookAPI = {
     return response.data;
   },
 
-  getBookById: async (url: string): Promise<Book> => {
-    const response = await api.get<Book>(`/bookclub/${url}`);
+  getBookById: async (id: string): Promise<Book> => {
+    const response = await api.get<Book>(`/bookclub/${id}`);
     return response.data;
   },
 
