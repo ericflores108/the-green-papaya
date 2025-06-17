@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Layout,
   Input,
@@ -122,6 +122,8 @@ const App: React.FC = () => {
     } catch (error) {
       console.error('Error fetching books:', error);
       message.error('Failed to load books. Please try again later.');
+      setBooks([]);
+      setFilteredBooks([]);
     } finally {
       setLoading(false);
     }
@@ -167,7 +169,7 @@ const App: React.FC = () => {
     setFilteredBooks(filtered);
   }, [searchTerm, selectedIntegration, dateFilter, books]);
 
-  const integrations: string[] = ['all', ...new Set(books.map(book => book.integration_name))];
+  const integrations = ['all', ...new Set(books.map(book => book.integration_name))];
 
   return (
     <ConfigProvider
