@@ -12,10 +12,10 @@ class BookClubListView(generics.ListAPIView):
     search_fields = ["book", "author"]
 
 
-class BookClubDetailView(generics.RetrieveAPIView):
+class BookClubByIdView(generics.RetrieveAPIView):
     queryset = BookClub.objects.select_related("integration").all()
     serializer_class = BookClubSerializer
-    lookup_field = "url"
+    lookup_field = "id"
 
 
 class BookClubSearchView(generics.ListAPIView):
