@@ -10,10 +10,12 @@ dependencies = [
     "django-stubs>=5.2.0",
     "djangorestframework>=3.16.0",
     "djangorestframework-stubs>=3.16.0",
+    "django-filter>=24.1",
     "psycopg>=3.2.9",
     "psycopg-pool>=3.2.6",
     "python-dotenv>=1.1.0",
     "whitenoise>=6.6.0",
     "gunicorn>=22.0.0",
     "asgiref>=3.8.1",
+    "django-filter-stubs>=0.1.3",
 ]
