@@ -28,6 +28,17 @@ export interface BookResponse {
   results: Book[];
 }
 
+export interface Integration {
+  id: string;
+  name: string;
+}
+
+export interface IntegrationResponse {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: Integration[];
+}
 // Configure your backend URL
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
 
@@ -80,9 +91,9 @@ export const bookAPI = {
     return response.data;
   },
 
-  getIntegrations: async (): Promise<string[]> => {
-    const response = await api.get<string[]>('/integrations');
-    return response.data;
+  getIntegrations: async (): Promise<Integration[]> => {
+    const response = await api.get<IntegrationResponse>('/integrations');
+    return response.data.results;
   },
 };
 

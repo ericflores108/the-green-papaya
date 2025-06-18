@@ -38,36 +38,22 @@ type DateFilter = 'all' | 'week' | 'month' | 'quarter';
 
 // Add this function to generate random colors
 const generateRandomColor = () => {
-  const minBrightness = 50;
-  const maxBrightness = 200;
-  const minContrast = 3; // Minimum contrast ratio with white
+  const color = [
+    '#4F46E5', // Indigo
+    '#EC4899', // Pink
+    '#10B981', // Emerald
+    '#F59E0B', // Amber
+    '#3B82F6', // Blue
+    '#8B5CF6', // Violet
+    '#EF4444', // Red
+    '#14B8A6', // Teal
+    '#F97316', // Orange
+    '#6366F1', // Indigo
+    '#D946EF', // Fuchsia
+    '#06B6D4', // Cyan
+  ];
   
-  const getContrastRatio = (r: number, g: number, b: number) => {
-    // Convert RGB to relative luminance
-    const [rs, gs, bs] = [r, g, b].map(c => {
-      c = c / 255;
-      return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
-    });
-    const luminance = 0.2126 * rs + 0.7152 * gs + 0.0722 * bs;
-    
-    // Calculate contrast ratio with white (luminance = 1)
-    return (1 + 0.05) / (luminance + 0.05);
-  };
-  
-  let r, g, b, contrast;
-  do {
-    r = Math.floor(Math.random() * (maxBrightness - minBrightness) + minBrightness);
-    g = Math.floor(Math.random() * (maxBrightness - minBrightness) + minBrightness);
-    b = Math.floor(Math.random() * (maxBrightness - minBrightness) + minBrightness);
-    contrast = getContrastRatio(r, g, b);
-  } while (contrast < minContrast);
-  
-  const toHex = (n: number) => {
-    const hex = n.toString(16);
-    return hex.length === 1 ? '0' + hex : hex;
-  };
-  
-  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+  return color[Math.floor(Math.random() * color.length)];
 };
 
 interface BookCardProps {
@@ -144,7 +130,7 @@ const App: React.FC = () => {
         const integrations = await bookAPI.getIntegrations();
         const colors: Record<string, string> = {};
         integrations.forEach(integration => {
-          colors[integration] = generateRandomColor();
+          colors[integration.name] = generateRandomColor();
         });
         setIntegrationColors(colors);
       } catch (error) {
