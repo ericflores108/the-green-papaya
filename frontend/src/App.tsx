@@ -36,19 +36,46 @@ const { Search } = Input;
 type ViewMode = 'grid' | 'list';
 type DateFilter = 'all' | 'week' | 'month' | 'quarter';
 
-// Integration color mapping
-const integrationColors: Record<string, string> = {
-  'NYT Books Section': '#000000',
-  "NPR's Book of the Day": '#D62E2E',
-  'Service95 Book Club With Dua Lipa': '#FF006E',
-  'The Book Review': '#2E7D32',
+// Add this function to generate random colors
+const generateRandomColor = () => {
+  const minBrightness = 50;
+  const maxBrightness = 200;
+  const minContrast = 3; // Minimum contrast ratio with white
+  
+  const getContrastRatio = (r: number, g: number, b: number) => {
+    // Convert RGB to relative luminance
+    const [rs, gs, bs] = [r, g, b].map(c => {
+      c = c / 255;
+      return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+    });
+    const luminance = 0.2126 * rs + 0.7152 * gs + 0.0722 * bs;
+    
+    // Calculate contrast ratio with white (luminance = 1)
+    return (1 + 0.05) / (luminance + 0.05);
+  };
+  
+  let r, g, b, contrast;
+  do {
+    r = Math.floor(Math.random() * (maxBrightness - minBrightness) + minBrightness);
+    g = Math.floor(Math.random() * (maxBrightness - minBrightness) + minBrightness);
+    b = Math.floor(Math.random() * (maxBrightness - minBrightness) + minBrightness);
+    contrast = getContrastRatio(r, g, b);
+  } while (contrast < minContrast);
+  
+  const toHex = (n: number) => {
+    const hex = n.toString(16);
+    return hex.length === 1 ? '0' + hex : hex;
+  };
+  
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
 };
 
 interface BookCardProps {
   book: Book;
+  integrationColors: Record<string, string>;
 }
 
-const BookCard: React.FC<BookCardProps> = ({ book }) => {
+const BookCard: React.FC<BookCardProps> = ({ book, integrationColors }) => {
   const integrationColor = integrationColors[book.integration_name] || '#4F46E5';
   
   return (
@@ -107,6 +134,27 @@ const App: React.FC = () => {
   const [selectedIntegration, setSelectedIntegration] = useState<string>('all');
   const [dateFilter, setDateFilter] = useState<DateFilter>('all');
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  // Add new state for integration colors
+  const [integrationColors, setIntegrationColors] = useState<Record<string, string>>({});
+
+  // Add new effect to fetch integrations and assign colors
+  useEffect(() => {
+    const fetchIntegrations = async () => {
+      try {
+        const integrations = await bookAPI.getIntegrations();
+        const colors: Record<string, string> = {};
+        integrations.forEach(integration => {
+          colors[integration] = generateRandomColor();
+        });
+        setIntegrationColors(colors);
+      } catch (error) {
+        console.error('Error fetching integrations:', error);
+        message.error('Failed to load integrations. Please try again later.');
+      }
+    };
+
+    fetchIntegrations();
+  }, []);
 
   // Fetch data from your backend
   useEffect(() => {
@@ -276,7 +324,7 @@ const App: React.FC = () => {
                   sm={viewMode === 'list' ? 24 : 12}
                   lg={viewMode === 'list' ? 24 : 8}
                 >
-                  <BookCard book={book} />
+                  <BookCard book={book} integrationColors={integrationColors} />
                 </Col>
               ))}
             </Row>
