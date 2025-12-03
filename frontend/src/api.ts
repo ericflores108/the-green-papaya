@@ -40,7 +40,7 @@ export interface IntegrationResponse {
   results: Integration[];
 }
 // Configure your backend URL
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+const API_BASE_URL = 'https://the-green-papaya-api.fly.dev';
 
 const api: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
@@ -69,30 +69,53 @@ api.interceptors.response.use(
 );
 
 export const bookAPI = {
-  getAllBooks: async (): Promise<Book[]> => {
-    const response = await api.get<BookResponse>('/bookclub');
-    return response.data.results;
+  getAllBooks: async (): Promise<BookResponse> => {
+    let allBooks: Book[] = [];
+    let nextUrl: string | null = '/bookclub/';
+    let count = 0;
+
+    // Fetch all pages by following the 'next' URL
+    while (nextUrl) {
+      const response = await api.get<BookResponse>(nextUrl);
+      allBooks = [...allBooks, ...response.data.results];
+      count = response.data.count;
+
+      // Extract the path and query params from the next URL
+      if (response.data.next) {
+        const url = new URL(response.data.next);
+        nextUrl = `${url.pathname}${url.search}`;
+      } else {
+        nextUrl = null;
+      }
+    }
+
+    return {
+      count,
+      next: null,
+      previous: null,
+      results: allBooks,
+    };
   },
 
   getBooks: async (params?: BookFilters): Promise<BookResponse> => {
-    const response = await api.get<BookResponse>('/bookclub', { params });
+    const response = await api.get<BookResponse>('/bookclub/', { params });
     return response.data;
   },
 
   getBookById: async (id: string): Promise<Book> => {
-    const response = await api.get<Book>(`/bookclub/${id}`);
+    const response = await api.get<Book>(`/bookclub/${id}/`);
     return response.data;
   },
 
   searchBooks: async (query: string): Promise<Book[]> => {
-    const response = await api.get<Book[]>('/bookclub/search', { 
-      params: { q: query } 
+    const response = await api.get<Book[]>('/bookclub/search/', {
+      params: { q: query }
     });
     return response.data;
   },
 
   getIntegrations: async (): Promise<Integration[]> => {
-    const response = await api.get<IntegrationResponse>('/integrations');
+    const response = await api.get<IntegrationResponse>('/integrations/');
     return response.data.results;
   },
 };

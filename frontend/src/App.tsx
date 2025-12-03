@@ -151,8 +151,8 @@ const App: React.FC = () => {
     try {
       setLoading(true);
       const data = await bookAPI.getAllBooks();
-      setBooks(data);
-      setFilteredBooks(data);
+      setBooks(data.results);
+      setFilteredBooks(data.results);
     } catch (error) {
       console.error('Error fetching books:', error);
       message.error('Failed to load books. Please try again later.');
